@@ -3,7 +3,9 @@ package com.test.githubusers.presentation
 import androidx.lifecycle.*
 import com.test.githubusers.data.entities.GithubUser
 import com.test.githubusers.presentation.corutineUtil.DispatcherProvider
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.Dispatcher
 
 class GithubUsersViewModel(
     private val model: GithubUsersModel,
