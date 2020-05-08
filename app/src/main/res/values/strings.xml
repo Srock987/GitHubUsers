@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">GitHubUsers</string>
+    <string name="login">Login</string>
+    <string name="reposiotry1_repository2_repository3">Reposiotry1, Repository2, Repository3</string>
+    <string name="user_avatar">User Avatar</string>
 </resources>
