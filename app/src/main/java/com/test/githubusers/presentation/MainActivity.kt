@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.widget.SearchView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -32,6 +33,9 @@ class MainActivity : AppCompatActivity(), KodeinAware {
         })
         viewModel.getLoadingState().observe(this, Observer {
             if (it) progress.show() else progress.hide()
+        })
+        viewModel.getError().observe(this, Observer {
+            Toast.makeText(this, it, Toast.LENGTH_SHORT).show()gi
         })
         handleIntent(intent)
     }

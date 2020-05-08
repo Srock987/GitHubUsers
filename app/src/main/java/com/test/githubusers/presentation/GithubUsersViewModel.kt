@@ -26,6 +26,8 @@ class GithubUsersViewModel(
 
     fun getLoadingState(): LiveData<Boolean> = isLoading
 
+    fun getError(): LiveData<String> = error
+
     fun getFilteredData(): LiveData<List<GithubUser>> {
         return Transformations.switchMap(filterData) { filter ->
             val users = when {
