@@ -16,16 +16,41 @@ class GithubUsersViewModel(
         }
     }
 
+    private val filterData = MutableLiveData<String>("")
+
     private val error = MutableLiveData<String>()
 
     private val isLoading = MutableLiveData<Boolean>()
 
     fun getLoadingState(): LiveData<Boolean> = isLoading
 
-    fun getUserData(): LiveData<List<GithubUser>> = usersData
+    fun getFilteredData(): LiveData<List<GithubUser>> {
+        return Transformations.switchMap(filterData) { filter ->
+            val users = when {
+                filter.isEmpty() -> usersData
+                else -> {
+                    Transformations.switchMap(usersData) { userList ->
+                        val filteredUsers = MutableLiveData<List<GithubUser>>()
+                        val filteredList = userList.filter { user ->
+                            user.login.contains(filter) || user.userRepositories.any {
+                                it.contains(filter)
+                            }
+                        }
+                        filteredUsers.value = filteredList
+                        filteredUsers
+                    }
+                }
+            }
+            users
+        }
+    }
+
+    fun filterData(filter: String) {
+        filterData.postValue(filter)
+    }
 
     override fun fetchUsers() {
-        viewModelScope.launch(dispatcherProvider.io) {
+        viewModelScope.launch(dispatcherProvider.main) {
             isLoading.postValue(true)
             usersData.addSource(model.getGithubUsers().asLiveData(dispatcherProvider.io)) { users ->
                 users.fold(

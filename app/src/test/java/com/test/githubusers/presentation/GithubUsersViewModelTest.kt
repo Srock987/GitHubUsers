@@ -11,7 +11,6 @@ import io.mockk.confirmVerified
 import io.mockk.impl.annotations.RelaxedMockK
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
-import org.intellij.lang.annotations.Flow
 import org.junit.Before
 import org.junit.Test
 
@@ -41,7 +40,7 @@ class GithubUsersViewModelTest: BlockingTest(){
         val result = Result.success(userList)
         coEvery { model.getGithubUsers() } coAnswers { flowOf(result) }
         subject.getLoadingState().observeForever(isLoadingObserver)
-        subject.getUserData().observeForever(userObserver)
+        subject.getFilteredData().observeForever(userObserver)
         coVerify { model.getGithubUsers() }
         coVerify { isLoadingObserver.onChanged(true) }
         confirmVerified(isLoadingObserver, model)

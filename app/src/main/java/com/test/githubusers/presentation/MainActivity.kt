@@ -1,6 +1,12 @@
 package com.test.githubusers.presentation
 
+import android.app.SearchManager
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,13 +27,42 @@ class MainActivity : AppCompatActivity(), KodeinAware {
         setContentView(R.layout.activity_main)
         userRecyclerView.adapter = adapter
         userRecyclerView.layoutManager = LinearLayoutManager(this)
-        viewModel.getUserData().observe(this, Observer {
+        viewModel.getFilteredData().observe(this, Observer {
             adapter.setItems(it)
         })
         viewModel.getLoadingState().observe(this, Observer {
-//            if (it) progress.show() else progress.hide()
+            if (it) progress.show() else progress.hide()
         })
+        handleIntent(intent)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent){
+        if (Intent.ACTION_SEARCH.equals(intent.action)){
+            intent.getStringExtra(SearchManager.QUERY)?.let {
+                viewModel.filterData(it)
+            }
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.search_menu, menu)
+        val searchManager = getSystemService(Context.SEARCH_SERVICE) as? SearchManager
+        val searchView = menu?.findItem(R.id.search)?.actionView as? SearchView
+        val componentName = ComponentName(applicationContext, MainActivity::class.java)
+        val info = searchManager?.getSearchableInfo(componentName)
+        searchView?.setSearchableInfo(info)
+        searchView?.setOnSearchClickListener {
+                if(searchView.query.isEmpty()){
+                    searchView.setQuery("",true)
+                }
+        }
+        return true
     }
 
     override val kodein: Kodein by kodein()
+
 }

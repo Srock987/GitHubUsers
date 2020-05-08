@@ -12,12 +12,10 @@ class GithubUsersRetrofitDataSource(
     val service = client.getService()
 
     override suspend fun fetchGithubUsers(): List<GithubUser> {
-        return service.getUsers()
-            .take(USER_DATA_LIMIT)
+        return service.getUsers(PAGE_LIMIT,USER_DATA_LIMIT)
             .mapNotNull(mapper::mapUser)
             .map { user ->
-            user.copy(userRepositories = service.getUserRepos(user.login)
-                .takeLast(REPO_DATA_LIMIT)
+            user.copy(userRepositories = service.getUserRepos(user.login, PAGE_LIMIT, REPO_DATA_LIMIT)
                 .mapNotNull(mapper::mapRepos))
         }
     }
@@ -25,5 +23,6 @@ class GithubUsersRetrofitDataSource(
     companion object {
         const val USER_DATA_LIMIT = 30
         const val REPO_DATA_LIMIT = 3
+        const val PAGE_LIMIT = 1
     }
 }
